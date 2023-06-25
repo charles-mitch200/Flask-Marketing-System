@@ -8,7 +8,7 @@ Register
         <form action="" method="POST" class="form-register">
             {{ form.hidden_tag() }}
             <h1 class="h3 mb-3 font-weight-normal">
-                Please Create your Account
+                Create an Account
             </h1>
             <br>
             <div class="mb-3">
@@ -30,6 +30,12 @@ Register
             <br>
             <div class="d-grid gap-2">
                 {{ form.submit(class="btn btn-lg btn-primary") }}
+            </div>
+            <br>
+
+            <div class="checkbox mb-3 text-center">
+                <h6>Already have an account?</h6>
+                <a class="btn btn-sm btn-secondary" href="{{ url_for('login_page') }}">Login</a>
             </div>
         </form>
     </div>
