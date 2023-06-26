@@ -1,9 +1,9 @@
 from market import app
 from flask import render_template, redirect, url_for, request, flash
 from market.models import Item, User
-from market.forms import RegistrationField, LoginForm
+from market.forms import RegistrationField, LoginForm,PurchaseItemForm, SellItemForm
 from market import db
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, login_required
 
 
 # Route to the home page
@@ -15,8 +15,10 @@ def home_page():
 
 # Route to the market page (read)
 @app.route("/market")
+@login_required
 def market_page():
     items = Item.query.all()
+    purchase_form = PurchaseItemForm()
     return render_template("market.html", **locals())
 
 
@@ -30,6 +32,11 @@ def registration_page():
                               password=form.password1.data)
         db.session.add(user_to_create)
         db.session.commit()
+
+        # flash a new message and login the user
+        login_user(user_to_create)
+        flash(f"Account created successfully! You are now logged in as {user_to_create.username}", category="success")
+
         return redirect(url_for("market_page"))
     if form.errors != {}:
         for err_msg in form.errors.values():
@@ -52,7 +59,7 @@ def login_page():
             flash(f"Success! You are logged in as: {attempted_user.username}", category="success")
             return redirect(url_for("market_page"))
         else:
-            flash(f"Username and password do not match", category="error")
+            flash(f"Username and password do not match!", category="danger")
 
     return render_template("login.html", **locals())
 

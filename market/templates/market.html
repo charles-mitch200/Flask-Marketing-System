@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 {% block title %}
-  Market
+Market
 {% endblock %}
-
 {% block content %}
-  <table class="table table-dark table-hover">
+
+<div class="row" style="margin-top: 20px; margin-left: 20px;">
+  <div class="col-8">
+    <h2>Available Items</h2>
+    <p>Click on the Purchase Item button to buy an item.</p>
+    <br>
+    <table class="table table-dark table-hover">
       <thead>
         <tr>
           <th scope="col">ID</th>
@@ -13,20 +18,32 @@
           <th scope="col">Price</th>
           <th>Options</th>
         </tr>
-    </thead>
-    <tbody>
-      {% for item in items %}
+      </thead>
+      <tbody>
+        {% for item in items %}
+        {% include "includes/items_modal.html" %}
         <tr>
           <th scope="row">{{ item.id }}</th>
           <td>{{ item.name }}</td>
           <td>{{ item.barcode }}</td>
           <td>${{ item.price }}</td>
           <td>
-            <button class="btn btn-outline btn-info">More Info</button>
-            <button class="btn btn-outline btn-success">Purchase Item</button>
+            <button class="btn btn-outline btn-info" data-bs-toggle="modal" data-bs-target="#Modal-MoreInfo-{{ item.id }}">
+              More Info
+            </button>
+            <button class="btn btn-outline btn-success" data-bs-toggle="modal" data-bs-target="#Modal-PurchaseConfirm-{{ item.id }}">
+              Purchase Item
+            </button>
           </td>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="col-4">
+    <h2>Owned Item</h2>
+    <p>Click on the Sell Item button to put an item back to the market</p>
+    <br>
+  </div>
+</div>
 {% endblock %}
