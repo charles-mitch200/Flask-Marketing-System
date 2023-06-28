@@ -36,6 +36,14 @@ class User(db.Model, UserMixin):
         """Checks whether the passwords are a match"""
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
 
+    def can_purchase(self, item_obj):
+        """Returns true if the budget is greater than the item's price"""
+        return self.budget >= item_obj.price
+
+    def can_sell(self, item_obj):
+        """Returns True if the object is among the items owned by the user"""
+        return item_obj in self.items
+
 
 # Model to be a database table (Items)
 class Item(db.Model):
@@ -48,3 +56,16 @@ class Item(db.Model):
 
     def __repr__(self):
         return f"{self.name}"
+
+    def buy(self, user):
+        # Assign item to the current user
+        self.owner = user.id
+        # Decrease the user's budget
+        user.budget -= self.price
+        db.session.commit()
+
+    def sell(self, user):
+        """Assign ownership to no one and increase the budget"""
+        self.owner = None
+        user.budget += self.price
+        db.session.commit()

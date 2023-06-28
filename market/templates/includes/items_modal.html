@@ -41,6 +41,7 @@
           </h6>
           <br>
           <div class="d-grid">
+            <input id="purchased_item" name="purchased_item" type="hidden" value="{{ item.name }}">
             {{ purchase_form.submit(class="btn btn-outline-success") }}
           </div>
         </form>

@@ -1,9 +1,9 @@
 from market import app
 from flask import render_template, redirect, url_for, request, flash
 from market.models import Item, User
-from market.forms import RegistrationField, LoginForm,PurchaseItemForm, SellItemForm
+from market.forms import RegistrationField, LoginForm, PurchaseItemForm, SellItemForm
 from market import db
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 
 
 # Route to the home page
@@ -14,12 +14,41 @@ def home_page():
 
 
 # Route to the market page (read)
-@app.route("/market")
+@app.route("/market", methods=["GET", "POST"])
 @login_required
 def market_page():
-    items = Item.query.all()
     purchase_form = PurchaseItemForm()
-    return render_template("market.html", **locals())
+    selling_form = SellItemForm()
+    # To avoid the confirm form resubmission popup
+    if request.method == "POST":
+        # purchase item logic
+        # Access the item using the input's name
+        purchased_item = request.form.get("purchased_item")
+        p_item_object = Item.query.filter_by(name=purchased_item).first()
+        if p_item_object:
+            if current_user.can_purchase(p_item_object):
+                p_item_object.buy(current_user)
+                flash(f"Congratulations! You purchased {p_item_object.name} for ${p_item_object.price}.", category="success")
+            else:
+                flash(f"Unfortunately, you don't have enough money to purchase {p_item_object.name}!", category="danger")
+        # sell item logic
+        sold_item = request.form.get("sold_item")
+        s_item_object = Item.query.filter_by(name=sold_item).first()
+        # Check if the object exists
+        if s_item_object:
+            # Does the user really own this item
+            if current_user.can_sell(s_item_object):
+                s_item_object.sell(current_user)
+                flash(f"Congratulations! You sold {s_item_object.name}!", category="success")
+            else:
+                flash(f"Sorry! Something went wrong while selling {s_item_object.name}", category="danger")
+
+        return redirect(url_for("market_page"))
+    # Display only items without an owner
+    if request.method == "GET":
+        items = Item.query.filter_by(owner=None)
+        owned_items = Item.query.filter_by(owner=current_user.id)
+        return render_template("market.html", **locals())
 
 
 # Route to the registration page (create)
@@ -66,6 +95,7 @@ def login_page():
 
 # Route to log out a user
 @app.route("/logout")
+@login_required
 def logout_page():
     logout_user()
     flash(f"Logged out successfully!", category="info")

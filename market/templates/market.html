@@ -28,10 +28,10 @@ Market
           <td>{{ item.barcode }}</td>
           <td>${{ item.price }}</td>
           <td>
-            <button class="btn btn-outline btn-info" data-bs-toggle="modal" data-bs-target="#Modal-MoreInfo-{{ item.id }}">
+            <button class="btn btn-outline btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#Modal-MoreInfo-{{ item.id }}">
               More Info
             </button>
-            <button class="btn btn-outline btn-success" data-bs-toggle="modal" data-bs-target="#Modal-PurchaseConfirm-{{ item.id }}">
+            <button class="btn btn-outline btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#Modal-PurchaseConfirm-{{ item.id }}">
               Purchase Item
             </button>
           </td>
@@ -43,7 +43,27 @@ Market
   <div class="col-4">
     <h2>Owned Item</h2>
     <p>Click on the Sell Item button to put an item back to the market</p>
-    <br>
+
+    <div class="row">
+      {% for owned_item in owned_items %}
+      {% include "includes/owned_items_modal.html" %}
+        <div class="col-md-6">
+          <div style="margin-bottom: 5px" class="card shadow text-center">
+            <div class="card-body">
+              <h5 class="card-title">{{ owned_item.name }}</h5>
+              <button type="button"
+                      class="btn btn-outline-danger"
+                      style="margin-bottom: 5px"
+                      data-bs-toggle="modal"
+                      data-bs-target="#Modal-SellingConfirm-{{ owned_item.id }}">
+                Sell this item
+              </button>
+              <p class="card-text"><strong>This item costs ${{ owned_item.price }}.</strong></p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 </div>
 {% endblock %}
