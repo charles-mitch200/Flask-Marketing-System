@@ -39,7 +39,7 @@ def market_page():
             # Does the user really own this item
             if current_user.can_sell(s_item_object):
                 s_item_object.sell(current_user)
-                flash(f"Congratulations! You sold {s_item_object.name}!", category="success")
+                flash(f"Congratulations! {s_item_object.name} posted back to the market.", category="success")
             else:
                 flash(f"Sorry! Something went wrong while selling {s_item_object.name}", category="danger")
 
@@ -85,7 +85,7 @@ def login_page():
             attempted_password=form.password.data
         ):
             login_user(attempted_user)
-            flash(f"Success! You are logged in as: {attempted_user.username}", category="success")
+            flash(f"Login successful! You are logged in as: {attempted_user.username}", category="success")
             return redirect(url_for("market_page"))
         else:
             flash(f"Username and password do not match!", category="danger")
